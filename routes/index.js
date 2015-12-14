@@ -1,6 +1,11 @@
 var express = require('express');
 var router = express.Router();
 
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) { return next(); }
+  res.render('index', { title: 'Express'});
+}
+
 router.use(function(req, res, next) {
   console.log(req.session);
   if (!req.session.views) {
@@ -13,8 +18,8 @@ router.use(function(req, res, next) {
 
 /* GET home page. */
 
-router.get('/', function(req, res) {
-  res.render('index', { title: 'Express', user: req.user });
+router.get('/',ensureAuthenticated, function(req, res) {
+  res.redirect('/account');
 });
 
 module.exports = router;

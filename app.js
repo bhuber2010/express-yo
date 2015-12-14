@@ -80,20 +80,25 @@ passport.deserializeUser(function(obj, done) {
 passport.use(new GoogleStrategy({
   clientID: config.google.clientID,
   clientSecret: config.google.clientSecret,
-  callbackURL: config.google.callbackURL,
-  passReqToCallback: true
+  callbackURL: config.google.callbackURL
   },
   function(accessToken, refreshToken, profile, done) {
-    User.findOrCreate({ googleId: profile.id }, function (err, user) {
-      return done(err, user);
+    // asynchronous verification, for effect...
+    process.nextTick(function () {
+
+      // To keep the example simple, the user's Google profile is returned to
+      // represent the logged-in user.  In a typical application, you would want
+      // to associate the Google account with a user record in your database,
+      // and return that user instead.
+      return done(null, profile);
     });
   }
 ));
 
 // auth routes
 app.get('/auth/google',
-  passport.authenticate('google', { scope: 'https://www.googleapis.com/auth/plus.login' })
-);
+  passport.authenticate('google', { scope: 'https://www.googleapis.com/auth/plus.login' }));
+
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
   function(req, res) {
