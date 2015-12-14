@@ -16,7 +16,7 @@ var pg = require('pg'),
 
 var config = require('./oauth.js');
 var passport = require('passport');
-var GoogleStrategy = require('passport-google-oauth2').OAuth2Strategy;
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 
 var routes = require('./routes/index');
