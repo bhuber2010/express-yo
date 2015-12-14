@@ -14,9 +14,14 @@ var pg = require('pg'),
   session = require('express-session'),
   pgSession = require('connect-pg-simple')(session);
 
+var config = require('./oauth.js');
+var passport = require('passport');
+var GoogleStrategy = require('passport-google-oauth2').OAuth2Strategy;
+
 
 var routes = require('./routes/index');
 var users = require('./routes/user');
+var accounts = require('./routes/account');
 
 var app = express();
 
@@ -52,15 +57,64 @@ app.use(session({
     conString : process.env.DATABASE_URL,        // Connect using something else than default DATABASE_URL env variable
     tableName : 'session'                        // Use another table-name than the default "session" one
   }),
+  resave: true,
   saveUninitialized: true,
   secret: process.env.DB_SECRET,
   resave: false,
   cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 days
 }));
 
+// user authenication
+app.use(passport.initialize());
+app.use(passport.session());
 
+// serialize and deserialize
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+passport.deserializeUser(function(obj, done) {
+  done(null, obj);
+});
+
+// config
+passport.use(new GoogleStrategy({
+  clientID: config.google.clientID,
+  clientSecret: config.google.clientSecret,
+  callbackURL: config.google.callbackURL,
+  passReqToCallback: true
+  },
+  function(accessToken, refreshToken, profile, done) {
+    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+      return done(err, user);
+    });
+  }
+));
+
+// auth routes
+app.get('/auth/google',
+  passport.authenticate('google', { scope: 'https://www.googleapis.com/auth/plus.login' })
+);
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/' }),
+  function(req, res) {
+    res.redirect('/account');
+  });
+
+app.get('/logout', function(req, res){
+  req.logout();
+  res.redirect('/');
+});
+
+// test authentication
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) { return next(); }
+  res.redirect('/');
+}
+
+// routes
 app.use('/', routes);
 app.use('/users', users);
+app.use('/account', accounts);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {
