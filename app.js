@@ -10,18 +10,19 @@ var exphbs  = require('express-handlebars');
 
 var dotenv = require('dotenv').load();
 
-var pg = require('pg'),
-  session = require('express-session'),
-  pgSession = require('connect-pg-simple')(session);
+var pg = require('pg');
+var session = require('express-session');
+var pgSession = require('connect-pg-simple')(session);
 
 var config = require('./oauth.js');
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 
-var routes = require('./routes/index');
+var index = require('./routes/index');
 var users = require('./routes/user');
 var accounts = require('./routes/account');
+var dogs = require('./routes/dogs');
 
 var app = express();
 
@@ -33,13 +34,13 @@ app.locals.ENV_DEVELOPMENT = env == 'development';
 var nodemonkey = require('node-monkey').start({host: "127.0.0.1", port:"50500"});
 
 // view engine setup
-
-app.engine('handlebars', exphbs({
+app.engine('.hbs', exphbs({
   defaultLayout: 'main',
-  partialsDir: ['views/partials/']
+  partialsDir: ['views/partials/'],
+  extname: '.hbs'
 }));
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'handlebars');
+app.set('view engine', '.hbs');
 
 // app.use(favicon(__dirname + '/public/img/favicon.ico'));
 app.use(logger('dev'));
@@ -57,7 +58,6 @@ app.use(session({
     conString : process.env.DATABASE_URL,        // Connect using something else than default DATABASE_URL env variable
     tableName : 'session'                        // Use another table-name than the default "session" one
   }),
-  resave: true,
   saveUninitialized: true,
   secret: process.env.DB_SECRET,
   resave: false,
@@ -76,7 +76,7 @@ passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
 
-// config
+// passport config
 passport.use(new GoogleStrategy({
   clientID: config.google.clientID,
   clientSecret: config.google.clientSecret,
@@ -105,21 +105,24 @@ app.get('/auth/google/callback',
     res.redirect('/account');
   });
 
+// app logout
 app.get('/logout', function(req, res){
   req.logout();
   res.redirect('/');
 });
 
-// test authentication
+// run authentication
 function ensureAuthenticated(req, res, next) {
+  console.log("ensureAuthenticated",req.isAuthenticated());
   if (req.isAuthenticated()) { return next(); }
-  res.redirect('/');
+  res.render('index', { title: 'Express'});
 }
 
 // routes
-app.use('/', routes);
-app.use('/users', users);
-app.use('/account', accounts);
+app.use('/', index);
+app.use('/users', ensureAuthenticated, users);
+app.use('/account', ensureAuthenticated, accounts);
+app.use('/dogs', dogs);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {
