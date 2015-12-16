@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 router.use(function(req, res, next) {
-  console.log(req.session);
+  console.log("sessionID: ", req.sessionID );
   if (!req.session.views) {
     req.session.views = 1;
   } else {

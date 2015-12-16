@@ -122,7 +122,7 @@ function ensureAuthenticated(req, res, next) {
 app.use('/', index);
 app.use('/users', ensureAuthenticated, users);
 app.use('/account', ensureAuthenticated, accounts);
-app.use('/dogs', dogs);
+app.use('/dogs', ensureAuthenticated, dogs);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -15,22 +15,40 @@ router.get('/', function(req, res) {
     })
 });
 
-router.post('/', function(req, res) {
+router.get('/new', function(req, res) {
+  res.render('newDog', { title: 'Give me a new dogger!', tagLine: 'Doggie shizzle', placeHolderName: "Lassie", placeHolderBreed: "Lab" })
+});
+
+router.post('/new', function(req, res) {
   db.none("INSERT INTO dogs (name, breed) VALUES (${name}, ${breed});",{name: req.body.name, breed: req.body.breed})
   .then(function(result){
-    res.end();
+    res.redirect('/dogs');
   })
   .catch(function(error){
     res.json(error);
   })
 })
 
-router.get("/:id", function(req, res) {
+router.get('/:id', function(req, res) {
   var dogId = req.params.id;
   db.one("SELECT id, name, breed FROM dogs WHERE id=$1;",[dogId])
   .then(function(dogResult){
     console.log(dogResult);
-    res.render('aDog', { title: dogResult.name, breed: dogResult.breed })
+    res.render('aDog', { id: dogResult.id, name: dogResult.name, breed: dogResult.breed })
+  })
+  .catch(function(error){
+    res.json(error);
+  })
+})
+
+// router.get('/:id/edit', function(req, res)) {
+//
+// }
+
+router.put('/:id', function(req, res) {
+  db.none("UPDATE dogs SET name = ${name}, breed = ${breed} WHERE id = ${id};",{name: req.body.name, breed: req.body.breed, id: req.body.id})
+  .then(function(result){
+    res.redirect('/dogs/' + req.body.id);
   })
   .catch(function(error){
     res.json(error);
