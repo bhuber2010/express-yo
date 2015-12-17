@@ -4,7 +4,8 @@ $(function () {
 var $editDogger = $('#editDogger'),
     $submitEdit = $('#submitEdit'),
     $dogDetails = $('.dog-detials'),
-    $editDetails = $('.edit-details');
+    $editDetails = $('.edit-details'),
+    $removeDogger = $('a[title="Remove Dogger"]');
 
   $editDogger.on('click', function() {
     $editDogger.hide();
@@ -14,21 +15,20 @@ var $editDogger = $('#editDogger'),
   })
 
   $submitEdit.on('click', function() {
-    var dogLookup = $('#dogID');
+    var dogLookup = $('#dogID')[0].innerHTML;
     var newName = $('input[name="name"]').val();
     var newBreed = $('input[name=breed]').val();
     var update = {id: dogLookup, name: newName, breed: newBreed};
-    $submitEdit.hide();
-    $editDogger.show();
-    $editDetails.hide();
-    $dogDetails.show();
-    $.ajax('/dogs' + dogLookup, {
+    $.ajax('/dogs/' + dogLookup, {
       data: update,
       type: 'PUT'
     })
     .done(function (response) {
-      console.log(response);
-      window.location = "/dogs/" + dogLookup
+      location.reload();
+      $submitEdit.hide();
+      $editDogger.show();
+      $editDetails.hide();
+      $dogDetails.show();
     })
   })
 

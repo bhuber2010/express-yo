@@ -48,7 +48,17 @@ router.get('/:id', function(req, res) {
 router.put('/:id', function(req, res) {
   db.none("UPDATE dogs SET name = ${name}, breed = ${breed} WHERE id = ${id};",{name: req.body.name, breed: req.body.breed, id: req.body.id})
   .then(function(result){
-    res.redirect('/dogs/' + req.body.id);
+    res.end();
+  })
+  .catch(function(error){
+    res.json(error);
+  })
+})
+
+router.delete('/:id', function(req, res) {
+  db.none("DELTE FROM dogs WHERE id = $[id];",{id: req.body.id})
+  .then(function(result){
+    res.end();
   })
   .catch(function(error){
     res.json(error);
