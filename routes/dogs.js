@@ -56,7 +56,8 @@ router.put('/:id', function(req, res) {
 })
 
 router.delete('/:id', function(req, res) {
-  db.none("DELTE FROM dogs WHERE id = $[id];",{id: req.body.id})
+  console.log(req);
+  db.none("DELETE FROM dogs WHERE id = $[id];",{id: req.body.id})
   .then(function(result){
     res.end();
   })
