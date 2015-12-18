@@ -4,7 +4,7 @@
   <br>
   <ul>
     {{#each dogs}}
-    <li><a href="/dogs/{{id}}">{{name}}</a> is a {{breed}} <a href="/dogs" title="Remove Dogger" data-id="{{id}}"> x</a></li>
+    <li><a href="/dogs/{{id}}">{{name}}</a> is a {{breed}} <button type="button" name="delete dog" title="Remove Dogger" data-id="{{id}}">Delete></button></li>
     {{/each}}
   </ul>
   <p><a href="/dogs/new">Add a doger</a></p>

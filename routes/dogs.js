@@ -55,10 +55,11 @@ router.put('/:id', function(req, res) {
   })
 })
 
-router.delete('/:id', function(req, res) {
+router.delete('/remove', function(req, res) {
   console.log(req);
-  db.none("DELETE FROM dogs WHERE id = $[id];",{id: req.body.id})
+  db.none("DELETE FROM dogs WHERE id = ${id};",{id: req.body.id})
   .then(function(result){
+    console.log("successfully removed dog: " + req.body.id)
     res.end();
   })
   .catch(function(error){
