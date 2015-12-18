@@ -33,8 +33,7 @@ var $editDogger = $('#editDogger'),
   })
 
   $removeDogger.on('click', function() {
-    var dogIdToRemove = $(this).attr("data-id");
-    console.log(dogIdToRemove);
+    var dogIdToRemove = $(this).attr("data-id");  
     $.ajax('/dogs/remove', {
       data: {id: dogIdToRemove},
       type: 'DELETE'
