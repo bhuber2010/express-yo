@@ -6,7 +6,7 @@ var bodyParser = require('body-parser');
 
 router.get('/', function(req, res) {
   console.log(req.session.passport.user.id);
-  db.many("SELECT id, name, breed FROM dogs WHERE userID=${uID};",{uID: req.session.passport.user.id})
+  db.many("SELECT id, name, breed FROM dogs WHERE user_id=${uID};",{uID: req.session.passport.user.id})
     .then(function(result){
       console.log(result);
       res.render('dogs', { title: 'Dogs', dogs: result });
@@ -21,7 +21,7 @@ router.get('/new', function(req, res) {
 });
 
 router.post('/new', function(req, res) {
-  db.none("INSERT INTO dogs (name, breed, session_sid, userID) VALUES (${name}, ${breed}, ${sid} ${userID});",{name: req.body.name, breed: req.body.breed, sid: req.sessionID, userID: req.session.passport.user.id})
+  db.none("INSERT INTO dogs (name, breed, session_sid, user_id) VALUES (${name}, ${breed}, ${sid}, ${uID});",{name: req.body.name, breed: req.body.breed, sid: req.sessionID, uID: req.session.passport.user.id})
   .then(function(result){
     res.redirect('/dogs');
   })
