@@ -1,6 +1,7 @@
 var authID = require('../oauth.js');
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+var LocalStrategy = require('passport-local').Strategy;
 
 
 
@@ -12,7 +13,7 @@ passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
 
-// passport config
+// streatesies config
 passport.use(new GoogleStrategy({
   clientID: authID.google.clientID,
   clientSecret: authID.google.clientSecret,
@@ -27,6 +28,21 @@ passport.use(new GoogleStrategy({
       // to associate the Google account with a user record in your database,
       // and return that user instead.
       return done(null, profile);
+    });
+  }
+));
+
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    User.findOne({ username: username }, function(err, user) {
+      if (err) { return done(err); }
+      if (!user) {
+        return done(null, false, { message: 'Incorrect username.' });
+      }
+      if (!user.validPassword(password)) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+      return done(null, user);
     });
   }
 ));

@@ -3,6 +3,8 @@ var router = express.Router();
 var passport = require('../modules/passport_config');
 
 // auth routes
+
+//google
 router.get('/google',
   passport.authenticate('google', { scope: 'https://www.googleapis.com/auth/plus.login' }));
 
@@ -12,6 +14,16 @@ router.get('/google/callback',
     res.redirect('/account');
   });
 
+//local
+router.get('/login', function(req, res) {
+  res.render('login', {});
+});
+
+router.post('/login',
+  passport.authenticate('local', { failureRedirect: '/login' }),
+  function(req, res) {
+    res.redirect('/account');
+  });
 
 // app logout
 router.get('/logout', function(req, res){
