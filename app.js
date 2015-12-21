@@ -14,12 +14,9 @@ var pg = require('pg');
 var session = require('express-session');
 var pgSession = require('connect-pg-simple')(session);
 
-var config = require('./oauth.js');
-var passport = require('passport');
-var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-
-
 var index = require('./routes/index');
+var passport = require('./modules/passport_config')
+var auth = require('./routes/auth');
 var users = require('./routes/user');
 var accounts = require('./routes/account');
 var dogs = require('./routes/dogs');
@@ -67,49 +64,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// serialize and deserialize
-passport.serializeUser(function(user, done) {
-  done(null, user);
-});
-passport.deserializeUser(function(obj, done) {
-  done(null, obj);
-});
-
-// passport config
-passport.use(new GoogleStrategy({
-  clientID: config.google.clientID,
-  clientSecret: config.google.clientSecret,
-  callbackURL: config.google.callbackURL
-  },
-  function(accessToken, refreshToken, profile, done) {
-    // asynchronous verification, for effect...
-    process.nextTick(function () {
-
-      // To keep the example simple, the user's Google profile is returned to
-      // represent the logged-in user.  In a typical application, you would want
-      // to associate the Google account with a user record in your database,
-      // and return that user instead.
-      return done(null, profile);
-    });
-  }
-));
-
-// auth routes
-app.get('/auth/google',
-  passport.authenticate('google', { scope: 'https://www.googleapis.com/auth/plus.login' }));
-
-app.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/' }),
-  function(req, res) {
-    res.redirect('/account');
-  });
-
-// app logout
-app.get('/logout', function(req, res){
-  req.logout();
-  res.redirect('/');
-});
-
 // run authentication
 function ensureAuthenticated(req, res, next) {
   console.log("ensureAuthenticated",req.isAuthenticated());
@@ -119,6 +73,7 @@ function ensureAuthenticated(req, res, next) {
 
 // routes
 app.use('/', index);
+app.use('/auth', auth);
 app.use('/users', ensureAuthenticated, users);
 app.use('/account', ensureAuthenticated, accounts);
 app.use('/dogs', ensureAuthenticated, dogs);
