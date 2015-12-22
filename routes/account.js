@@ -12,7 +12,10 @@ router.use(function(req, res, next) {
 })
 
 router.get('/', function(req, res){
-  res.render('account', { title: 'Express', user: req.user, photo: req.user._json.image.url });
+  console.log(req.user);
+  res.render('account', { title: 'Express', user: req.user });
 });
 
 module.exports = router;
+
+// , photo: req.user._json.image.url

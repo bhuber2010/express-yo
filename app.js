@@ -27,7 +27,7 @@ var env = process.env.NODE_ENV || 'development';
 var ENV_DEVELOPMENT = process.env.ENV_DEVELOPMENT;
 
 //send server side log to browser
-var nodemonkey = require('node-monkey').start({host: "0.0.0.0", port:"50500"});
+var nodemonkey = require('node-monkey').start({host: "127.0.0.1", port:"50500"});
 
 // view engine setup
 app.engine('.hbs', exphbs({

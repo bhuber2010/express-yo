@@ -6,10 +6,11 @@ var bodyParser = require('body-parser');
 
 router.get('/', function(req, res) {
   console.log(req.session.passport.user.id);
-  db.many("SELECT id, name, breed FROM dogs WHERE user_id=${uID};",{uID: req.session.passport.user.id})
+  db.any("SELECT id, name, breed FROM dogs WHERE user_id=${uID};",{uID: req.session.passport.user.id})
     .then(function(result){
       console.log(result);
-      res.render('dogs', { title: 'Dogs', dogs: result });
+      result.length ? noDogs = false : noDogs = "You got no Doggies boy";
+      res.render('dogs', { title: 'Dogs', dogs: result, none: noDogs });
     })
     .catch(function(error){
       res.json(error);

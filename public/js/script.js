@@ -1,12 +1,13 @@
 
 $(function () {
 
-var $editDogger = $('#editDogger'),
-    $submitEdit = $('#submitEdit'),
-    $dogDetails = $('.dog-detials'),
-    $editDetails = $('.edit-details'),
-    $removeDogger = $('button[title="Remove Dogger"]');
+  var $editDogger = $('#editDogger'),
+      $submitEdit = $('#submitEdit'),
+      $dogDetails = $('.dog-detials'),
+      $editDetails = $('.edit-details'),
+      $removeDogger = $('button[title="Remove Dogger"]');
 
+// edit dogger
   $editDogger.on('click', function() {
     $editDogger.hide();
     $submitEdit.show();
@@ -32,8 +33,9 @@ var $editDogger = $('#editDogger'),
     })
   })
 
+// delte dog from database and list
   $removeDogger.on('click', function() {
-    var dogIdToRemove = $(this).attr("data-id");  
+    var dogIdToRemove = $(this).attr("data-id");
     $.ajax('/dogs/remove', {
       data: {id: dogIdToRemove},
       type: 'DELETE'

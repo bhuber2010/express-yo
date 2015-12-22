@@ -4,12 +4,22 @@ var passport = require('../modules/passport_config');
 
 // auth routes
 
-//google
+// google
 router.get('/google',
   passport.authenticate('google', { scope: 'https://www.googleapis.com/auth/plus.login' }));
 
 router.get('/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
+  function(req, res) {
+    res.redirect('/account');
+  });
+
+// facebook
+router.get('/facebook',
+  passport.authenticate('facebook'));
+
+router.get('/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/' }),
   function(req, res) {
     res.redirect('/account');
   });
@@ -20,8 +30,10 @@ router.get('/login', function(req, res) {
 });
 
 router.post('/login',
-  passport.authenticate('local', { failureRedirect: '/login' }),
+  passport.authenticate('local', { failureRedirect: '/auth/login' }),
   function(req, res) {
+    // pull user off of req object
+
     res.redirect('/account');
   });
 
