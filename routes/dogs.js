@@ -5,7 +5,8 @@ var bodyParser = require('body-parser');
 
 
 router.get('/', function(req, res) {
-  db.many("SELECT id, name, breed FROM dogs;")
+  console.log(req.session.passport.user.id);
+  db.any("SELECT id, name, breed FROM dogs WHERE user_id=${uID};",{uID: req.session.passport.user.id})
     .then(function(result){
       console.log(result);
       res.render('dogs', { title: 'Dogs', dogs: result });
@@ -20,7 +21,7 @@ router.get('/new', function(req, res) {
 });
 
 router.post('/new', function(req, res) {
-  db.none("INSERT INTO dogs (name, breed) VALUES (${name}, ${breed});",{name: req.body.name, breed: req.body.breed})
+  db.none("INSERT INTO dogs (name, breed, session_sid, user_id) VALUES (${name}, ${breed}, ${sid}, ${uID});",{name: req.body.name, breed: req.body.breed, sid: req.sessionID, uID: req.session.passport.user.id})
   .then(function(result){
     res.redirect('/dogs');
   })
@@ -55,10 +56,11 @@ router.put('/:id', function(req, res) {
   })
 })
 
-router.delete('/:id', function(req, res) {
+router.delete('/remove', function(req, res) {
   console.log(req);
-  db.none("DELETE FROM dogs WHERE id = $[id];",{id: req.body.id})
+  db.none("DELETE FROM dogs WHERE id = ${id};",{id: req.body.id})
   .then(function(result){
+    console.log("successfully removed dog: " + req.body.id)
     res.end();
   })
   .catch(function(error){

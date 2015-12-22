@@ -5,7 +5,7 @@ var $editDogger = $('#editDogger'),
     $submitEdit = $('#submitEdit'),
     $dogDetails = $('.dog-detials'),
     $editDetails = $('.edit-details'),
-    $removeDogger = $('a[title="Remove Dogger"]');
+    $removeDogger = $('button[title="Remove Dogger"]');
 
   $editDogger.on('click', function() {
     $editDogger.hide();
@@ -32,14 +32,20 @@ var $editDogger = $('#editDogger'),
     })
   })
 
+
   $removeDogger.on('click', function() {
     var dogIdToRemove = $(this).attr("data-id");
-    console.log(dogIdToRemove);
-    $.ajax('/dogs/'+ dogIdToRemove, {
+    $.ajax('/dogs/remove', {
       data: {id: dogIdToRemove},
       type: 'DELETE'
     })
-    .done(console.log("Removed dog: " + dogIdToRemove))
+    .done(function(response) {
+      console.log("Removed dog: " + dogIdToRemove);
+      location.reload();
+    })
+    .fail(function(error) {
+      console.log(error)
+    })
   })
 
 })
