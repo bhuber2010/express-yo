@@ -13,9 +13,7 @@ router.use(function(req, res, next) {
 
 router.get('/', function(req, res){
   console.log(req.user);
-  res.render('account', { title: 'Express', user: req.user });
+  res.render('account', { title: 'Express', user: req.user, photo: req.user.photos[0].value });
 });
 
 module.exports = router;
-
-// , photo: req.user._json.image.url
