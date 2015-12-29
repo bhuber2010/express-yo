@@ -11,6 +11,7 @@ router.get('/', function(req, res) {
   knex.select('id', 'name', 'breed')
   .where('user_id', req.session.passport.user.id)
   .from('dogs')
+  .orderBy('id')
   .then(function(result){
     console.log(result);
     result.length ? noDogs = false : noDogs = "You got no Doggies boy";
