@@ -1,14 +1,18 @@
 
-
+<section>
   <h1>{{title}}</h1>
   <br>
   {{#if none}}
     <h3>{{none}}</h3>
   {{/if}}
-  <ul>
+  <ul class="dog-list">
     {{#if dogs}}
     {{#each dogs}}
-    <li><a href="/dogs/{{id}}">{{name}}</a> is a {{breed}} <button type="button" name="delete dog" title="Remove Dogger" data-id="{{id}}">Delete</button></li>
+    <li>
+      <a href="/dogs/{{id}}">{{name}}</a>
+      <span>is a {{breed}} </span>
+      <button type="button" name="delete dog" title="Remove Dogger" data-id="{{id}}">Delete</button>
+    </li>
     {{/each}}
     {{/if}}
   </ul>
@@ -16,3 +20,4 @@
   <br>
   <a href="/">Home</a>
   <a href="/auth/logout">Logout</a>
+</section>
