@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('../modules/passport_config');
+var knex = require('../db/knex');
 
 // auth routes
 
@@ -11,6 +12,7 @@ router.get('/google',
 router.get('/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
   function(req, res) {
+    insertUser(req.user);
     res.redirect('/account');
   });
 
@@ -21,6 +23,8 @@ router.get('/facebook',
 router.get('/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/' }),
   function(req, res) {
+    // console.log(req.user);
+    insertUser(req.user);
     res.redirect('/account');
   });
 
@@ -42,5 +46,28 @@ router.get('/logout', function(req, res){
   req.logout();
   res.redirect('/');
 });
+
+// insert user into users table
+function insertUser(userObj) {
+  knex('users').where('user_id', userObj.id)
+  .then(function(user){
+    if (user.length === 0) {
+      return knex('users').insert({
+        display_name: userObj.displayName,
+        user_id:      userObj.id,
+        provider:     userObj.provider,
+        times_seen:   1
+      })
+    } else {
+      return knex('users').where('user_id', user[0].user_id).increment('times_seen', 1)
+    }
+  })
+  .then(function(result){
+    console.log(result)
+  })
+  .catch(function(error){
+    console.error(error);
+  })
+}
 
 module.exports = router;
