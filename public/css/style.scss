@@ -10,14 +10,11 @@ a {
 .dog-list {
   display: flex;
   flex-direction: column;
-  width: 30vw;
+  width: 23vw;
 
   li {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
 
-    button {
-      align-self: flex-end;
-    }
   }
 }

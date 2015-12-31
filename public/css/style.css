@@ -8,9 +8,7 @@ a {
 .dog-list {
   display: flex;
   flex-direction: column;
-  width: 30vw; }
+  width: 23vw; }
   .dog-list li {
     display: flex;
-    justify-content: flex-start; }
-    .dog-list li button {
-      align-self: flex-end; }
+    justify-content: space-between; }
