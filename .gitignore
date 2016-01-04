@@ -3,3 +3,4 @@ public/components
 oauth.js
 .sass-cache
 .env
+seeds/01_users
