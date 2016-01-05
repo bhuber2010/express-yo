@@ -1,4 +1,5 @@
 var authID = require('../oauth.js');
+var knex = require('../db/knex');
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
@@ -23,11 +24,6 @@ passport.use(new GoogleStrategy({
   function(accessToken, refreshToken, profile, done) {
     // asynchronous verification, for effect...
     process.nextTick(function () {
-
-      // To keep the example simple, the user's Google profile is returned to
-      // represent the logged-in user.  In a typical application, you would want
-      // to associate the Google account with a user record in your database,
-      // and return that user instead.
       return done(null, profile);
     });
   }
@@ -49,7 +45,7 @@ passport.use(new FacebookStrategy({
 
 passport.use(new LocalStrategy(
   function(username, password, done) {
-     db.one()
+     knex('users').where('user_id', username).first()
       .then(function(user) {
         if (!user) {
           return done(null, false, { message: 'Incorrect username.' });

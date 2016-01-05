@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var passport = require('../modules/passport_config');
 var knex = require('../db/knex');
+var bcrypt = require('bcrypt');
 
 // auth routes
 
@@ -37,7 +38,6 @@ router.post('/login',
   passport.authenticate('local', { failureRedirect: '/auth/login' }),
   function(req, res) {
     // pull user off of req object
-
     res.redirect('/account');
   });
 
@@ -45,6 +45,30 @@ router.post('/login',
 router.get('/logout', function(req, res){
   req.logout();
   res.redirect('/');
+});
+
+// sign up
+router.get('/signup', function(req, res){
+    res.render('signup');
+});
+
+router.post('/signup', function(req, res){
+  knex('users').where('user_id', req.body.email).first()
+  .then(function(user){
+    if(user) {
+      res.redirect('/auth/login?error=' + encodeURIComponent('That email is in use.'));
+    } else {
+      knex('users').insert({
+        display_name: req.body.email,
+        email: req.body.email,
+        user_id: req.body.email,
+        password_hash: bcrypt.hashSync(req.body.password, 10),
+        times_seen: 1
+      }).then(function(){
+        res.redirect('/auth/login');
+      });
+    }
+  });
 });
 
 // insert user into users table
