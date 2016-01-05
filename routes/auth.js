@@ -29,6 +29,22 @@ router.get('/facebook/callback',
     res.redirect('/account');
   });
 
+// linkedIn
+router.get('/linkedin',
+  passport.authenticate('linkedin'),
+  function(req, res){
+    // The request will be redirected to LinkedIn for authentication, so this
+    // function will not be called.
+  });
+
+router.get('/linkedin/callback',
+  passport.authenticate('linkedin', { failureRedirect: '/'}),
+  function(req, res) {
+    console.log(req.user);
+    insertUser(req.user);
+    res.redirect('/account');
+  });
+
 //local
 router.get('/login', function(req, res) {
   res.render('login', {});

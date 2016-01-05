@@ -3,6 +3,7 @@ var knex = require('../db/knex');
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
+var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 var LocalStrategy = require('passport-local').Strategy;
 
 
@@ -15,7 +16,7 @@ passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
 
-// streatesies config
+// strategies config
 passport.use(new GoogleStrategy({
   clientID: authID.google.clientID,
   clientSecret: authID.google.clientSecret,
@@ -42,6 +43,23 @@ passport.use(new FacebookStrategy({
     });
   }
 ));
+
+passport.use(new LinkedInStrategy({
+  clientID: authID.linkedIn.clientID,
+  clientSecret: authID.linkedIn.clientSecret,
+  callbackURL: authID.linkedIn.callbackURL,
+  scope: ['r_emailaddress', 'r_basicprofile'],
+  state: true
+}, function(accessToken, refreshToken, profile, done) {
+  // asynchronous verification, for effect...
+  process.nextTick(function () {
+    // To keep the example simple, the user's LinkedIn profile is returned to
+    // represent the logged-in user. In a typical application, you would want
+    // to associate the LinkedIn account with a user record in your database,
+    // and return that user instead.
+    return done(null, profile);
+  });
+}));
 
 passport.use(new LocalStrategy(
   function(username, password, done) {
